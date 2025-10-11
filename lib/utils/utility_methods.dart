@@ -1,6 +1,6 @@
-import 'package:food_share_connect/screens/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:koduge_kart/screens/login.dart';
 
 class UtilityMethods {
   static onLogout(BuildContext context) {

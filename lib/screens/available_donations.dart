@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:food_share_connect/constants/app_colors.dart';
-import 'package:food_share_connect/utils/matching_service.dart';
+import 'package:koduge_kart/constants/app_colors.dart';
+import 'package:koduge_kart/utils/matching_service.dart';
 import 'package:intl/intl.dart';
 
 class AvailableDonations extends StatefulWidget {
@@ -31,27 +31,30 @@ class _AvailableDonationsState extends State<AvailableDonations> {
 
     try {
       print('Loading available donations for NGO: $currentUserId');
-      
+
       // Get current NGO's location for nearby search
-      DocumentSnapshot ngoProfile = await FirebaseFirestore.instance
-          .collection('user')
-          .doc(currentUserId)
-          .get();
+      DocumentSnapshot ngoProfile =
+          await FirebaseFirestore.instance
+              .collection('user')
+              .doc(currentUserId)
+              .get();
 
       double? latitude, longitude;
       if (ngoProfile.exists) {
-        Map<String, dynamic> ngoData = ngoProfile.data() as Map<String, dynamic>;
+        Map<String, dynamic> ngoData =
+            ngoProfile.data() as Map<String, dynamic>;
         latitude = ngoData['latitude']?.toDouble();
         longitude = ngoData['longitude']?.toDouble();
       }
 
-      List<DonationRequest> donations = await MatchingService.getAvailableDonations(
-        ngoId: currentUserId,
-        latitude: latitude,
-        longitude: longitude,
-        radiusKm: 50.0,
-        limit: 20,
-      );
+      List<DonationRequest> donations =
+          await MatchingService.getAvailableDonations(
+            ngoId: currentUserId,
+            latitude: latitude,
+            longitude: longitude,
+            radiusKm: 50.0,
+            limit: 20,
+          );
 
       setState(() {
         availableDonations = donations;
@@ -81,44 +84,36 @@ class _AvailableDonationsState extends State<AvailableDonations> {
           ),
         ],
       ),
-      body: loading
-          ? const Center(
-              child: CircularProgressIndicator(
-                color: AppColors.primaryColor,
-              ),
-            )
-          : availableDonations.isEmpty
+      body:
+          loading
               ? const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.inbox_outlined,
-                        size: 64,
-                        color: Colors.grey,
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        'No available donations found',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _loadAvailableDonations,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: availableDonations.length,
-                    itemBuilder: (context, index) {
-                      final donation = availableDonations[index];
-                      return _buildDonationCard(donation);
-                    },
-                  ),
+                child: CircularProgressIndicator(color: AppColors.primaryColor),
+              )
+              : availableDonations.isEmpty
+              ? const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.inbox_outlined, size: 64, color: Colors.grey),
+                    SizedBox(height: 16),
+                    Text(
+                      'No available donations found',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+                  ],
                 ),
+              )
+              : RefreshIndicator(
+                onRefresh: _loadAvailableDonations,
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: availableDonations.length,
+                  itemBuilder: (context, index) {
+                    final donation = availableDonations[index];
+                    return _buildDonationCard(donation);
+                  },
+                ),
+              ),
     );
   }
 
@@ -126,9 +121,7 @@ class _AvailableDonationsState extends State<AvailableDonations> {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -160,11 +153,10 @@ class _AvailableDonationsState extends State<AvailableDonations> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      DateFormat('dd/MM/yyyy').format(donation.addedDate.toDate()),
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12,
-                      ),
+                      DateFormat(
+                        'dd/MM/yyyy',
+                      ).format(donation.addedDate.toDate()),
+                      style: const TextStyle(color: Colors.grey, fontSize: 12),
                     ),
                     if (donation.distance != null)
                       Text(
@@ -180,7 +172,7 @@ class _AvailableDonationsState extends State<AvailableDonations> {
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Request ID
             Text(
               'Request ID: ${donation.requestId}',
@@ -191,59 +183,53 @@ class _AvailableDonationsState extends State<AvailableDonations> {
               ),
             ),
             const SizedBox(height: 8),
-            
+
             // Items available
             const Text(
               'Items Available:',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            
+
             // Items list
-            ...donation.items.map((item) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    item['name'] ?? 'Unknown',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                  Text(
-                    '${item['quantity']} ${item['unit'] ?? ''}',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+            ...donation.items.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      item['name'] ?? 'Unknown',
+                      style: const TextStyle(fontSize: 14),
                     ),
-                  ),
-                ],
+                    Text(
+                      '${item['quantity']} ${item['unit'] ?? ''}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            )),
-            
+            ),
+
             const SizedBox(height: 12),
-            
+
             // Donor information
             const Divider(),
             const Text(
               'Donor Contact:',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            if (donation.email.isNotEmpty)
-              Text('Email: ${donation.email}'),
-            if (donation.phone.isNotEmpty)
-              Text('Phone: ${donation.phone}'),
+            if (donation.email.isNotEmpty) Text('Email: ${donation.email}'),
+            if (donation.phone.isNotEmpty) Text('Phone: ${donation.phone}'),
             if (donation.address.isNotEmpty)
               Text('Address: ${donation.address}'),
-            
+
             const SizedBox(height: 16),
-            
+
             // Accept button
             SizedBox(
               width: double.infinity,
@@ -259,10 +245,7 @@ class _AvailableDonationsState extends State<AvailableDonations> {
                 ),
                 child: const Text(
                   'Accept Donation',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -308,9 +291,7 @@ class _AvailableDonationsState extends State<AvailableDonations> {
           barrierDismissible: false,
           builder: (BuildContext context) {
             return const Center(
-              child: CircularProgressIndicator(
-                color: AppColors.primaryColor,
-              ),
+              child: CircularProgressIndicator(color: AppColors.primaryColor),
             );
           },
         );
@@ -330,7 +311,7 @@ class _AvailableDonationsState extends State<AvailableDonations> {
               backgroundColor: Colors.green,
             ),
           );
-          
+
           // Refresh the list
           _loadAvailableDonations();
         } else {
@@ -344,7 +325,7 @@ class _AvailableDonationsState extends State<AvailableDonations> {
       } catch (e) {
         // Close loading dialog if still open
         Navigator.of(context).pop();
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error accepting donation: $e'),

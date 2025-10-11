@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:food_share_connect/controller_bindings.dart';
-import 'package:food_share_connect/firebase_options.dart';
-import 'package:food_share_connect/screens/donor_home.dart';
-import 'package:food_share_connect/screens/login.dart';
-import 'package:food_share_connect/screens/ngo_home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:koduge_kart/controller_bindings.dart';
+import 'package:koduge_kart/firebase_options.dart';
+import 'package:koduge_kart/screens/donor_home.dart';
+import 'package:koduge_kart/screens/login.dart';
+import 'package:koduge_kart/screens/ngo_home.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       // Changed from MaterialApp to GetMaterialApp
-      title: 'FoodShare Connect',
+      title: 'Koduge Kart',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

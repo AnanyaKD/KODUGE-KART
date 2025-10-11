@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:food_share_connect/constants/app_colors.dart';
-import 'package:food_share_connect/models/donor_model.dart';
-import 'package:food_share_connect/utils/matching_service.dart';
+import 'package:koduge_kart/constants/app_colors.dart';
+import 'package:koduge_kart/models/donor_model.dart';
 import 'package:intl/intl.dart';
 
 class DonorHistoryScreen extends StatefulWidget {
@@ -15,16 +14,20 @@ class DonorHistoryScreen extends StatefulWidget {
 
 class _DonorHistoryScreenState extends State<DonorHistoryScreen> {
   String selectedFilter = 'All';
-  final List<String> filterOptions = ['All', 'Pending', 'Matched', 'Accepted', 'Fulfilled'];
+  final List<String> filterOptions = [
+    'All',
+    'Pending',
+    'Matched',
+    'Accepted',
+    'Fulfilled',
+  ];
 
   // Method to fetch NGO details from Firestore
   Future<Map<String, dynamic>?> fetchNGODetails(String ngoId) async {
     try {
-      DocumentSnapshot ngoDoc = await FirebaseFirestore.instance
-          .collection('user')
-          .doc(ngoId)
-          .get();
-      
+      DocumentSnapshot ngoDoc =
+          await FirebaseFirestore.instance.collection('user').doc(ngoId).get();
+
       if (ngoDoc.exists) {
         return ngoDoc.data() as Map<String, dynamic>;
       }
@@ -57,11 +60,11 @@ class _DonorHistoryScreenState extends State<DonorHistoryScreen> {
                   duration: Duration(seconds: 1),
                 ),
               );
-              
+
               try {
                 // Import MatchingService first
                 // await MatchingService.updateExistingDonationsWithMatches();
-                
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Donation matches updated successfully!'),
@@ -104,38 +107,47 @@ class _DonorHistoryScreenState extends State<DonorHistoryScreen> {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: filterOptions.map((filter) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: FilterChip(
-                      label: Text(filter),
-                      selected: selectedFilter == filter,
-                      onSelected: (bool selected) {
-                        setState(() {
-                          selectedFilter = filter;
-                        });
-                      },
-                      selectedColor: AppColors.primaryColor.withValues(alpha: 0.3),
-                      checkmarkColor: AppColors.textColor,
-                    ),
-                  );
-                }).toList(),
+                children:
+                    filterOptions.map((filter) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: FilterChip(
+                          label: Text(filter),
+                          selected: selectedFilter == filter,
+                          onSelected: (bool selected) {
+                            setState(() {
+                              selectedFilter = filter;
+                            });
+                          },
+                          selectedColor: AppColors.primaryColor.withValues(
+                            alpha: 0.3,
+                          ),
+                          checkmarkColor: AppColors.textColor,
+                        ),
+                      );
+                    }).toList(),
               ),
             ),
           ),
           // Donations list
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('donorfood')
-                  .where('donorId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-                  .orderBy('addeddate', descending: true)
-                  .snapshots(),
+              stream:
+                  FirebaseFirestore.instance
+                      .collection('donorfood')
+                      .where(
+                        'donorId',
+                        isEqualTo: FirebaseAuth.instance.currentUser!.uid,
+                      )
+                      .orderBy('addeddate', descending: true)
+                      .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryColor),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppColors.primaryColor,
+                      ),
                     ),
                   );
                 }
@@ -154,11 +166,7 @@ class _DonorHistoryScreenState extends State<DonorHistoryScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.history,
-                          size: 64,
-                          color: Colors.grey,
-                        ),
+                        Icon(Icons.history, size: 64, color: Colors.grey),
                         SizedBox(height: 16),
                         Text(
                           'No donation history found',
@@ -171,10 +179,7 @@ class _DonorHistoryScreenState extends State<DonorHistoryScreen> {
                         SizedBox(height: 8),
                         Text(
                           'Start by making your first donation!',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
                         ),
                       ],
                     ),
@@ -182,24 +187,30 @@ class _DonorHistoryScreenState extends State<DonorHistoryScreen> {
                 }
 
                 // Filter donations based on selected filter
-                List<QueryDocumentSnapshot> filteredDocs = snapshot.data!.docs.where((doc) {
-                  if (selectedFilter == 'All') return true;
-                  
-                  DonorModel donation = DonorModel.fromMap(doc.data() as Map<String, dynamic>);
-                  
-                  switch (selectedFilter) {
-                    case 'Pending':
-                      return donation.matchedNgoIds.isEmpty && !donation.isfulfilled;
-                    case 'Matched':
-                      return donation.matchedNgoIds.isNotEmpty && donation.acceptedByNgoId == null;
-                    case 'Accepted':
-                      return donation.acceptedByNgoId != null && !donation.isfulfilled;
-                    case 'Fulfilled':
-                      return donation.isfulfilled;
-                    default:
-                      return true;
-                  }
-                }).toList();
+                List<QueryDocumentSnapshot> filteredDocs =
+                    snapshot.data!.docs.where((doc) {
+                      if (selectedFilter == 'All') return true;
+
+                      DonorModel donation = DonorModel.fromMap(
+                        doc.data() as Map<String, dynamic>,
+                      );
+
+                      switch (selectedFilter) {
+                        case 'Pending':
+                          return donation.matchedNgoIds.isEmpty &&
+                              !donation.isfulfilled;
+                        case 'Matched':
+                          return donation.matchedNgoIds.isNotEmpty &&
+                              donation.acceptedByNgoId == null;
+                        case 'Accepted':
+                          return donation.acceptedByNgoId != null &&
+                              !donation.isfulfilled;
+                        case 'Fulfilled':
+                          return donation.isfulfilled;
+                        default:
+                          return true;
+                      }
+                    }).toList();
 
                 if (filteredDocs.isEmpty) {
                   return Center(
@@ -230,13 +241,14 @@ class _DonorHistoryScreenState extends State<DonorHistoryScreen> {
                   itemCount: filteredDocs.length,
                   itemBuilder: (context, index) {
                     DonorModel donation = DonorModel.fromMap(
-                      filteredDocs[index].data() as Map<String, dynamic>
+                      filteredDocs[index].data() as Map<String, dynamic>,
                     );
-                    
+
                     return DonationHistoryCard(
                       donation: donation,
                       documentId: filteredDocs[index].id,
-                      fetchNGODetails: fetchNGODetails, // Pass the fetchNGODetails method
+                      fetchNGODetails:
+                          fetchNGODetails, // Pass the fetchNGODetails method
                     );
                   },
                 );
@@ -279,13 +291,15 @@ class _DonationHistoryCardState extends State<DonationHistoryCard> {
 
   Future<void> _fetchNGODetails() async {
     if (widget.donation.acceptedByNgoId == null) return;
-    
+
     setState(() {
       loadingNGODetails = true;
     });
 
     try {
-      Map<String, dynamic>? details = await widget.fetchNGODetails(widget.donation.acceptedByNgoId!);
+      Map<String, dynamic>? details = await widget.fetchNGODetails(
+        widget.donation.acceptedByNgoId!,
+      );
       if (mounted) {
         setState(() {
           ngoDetails = details;
@@ -342,7 +356,10 @@ class _DonationHistoryCardState extends State<DonationHistoryCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: _getStatusColor().withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -370,16 +387,13 @@ class _DonationHistoryCardState extends State<DonationHistoryCard> {
                 ),
                 Text(
                   _formatDate(widget.donation.addeddate),
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12,
-                  ),
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             // Request ID
             Row(
               children: [
@@ -395,40 +409,39 @@ class _DonationHistoryCardState extends State<DonationHistoryCard> {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             // Items list
             const Text(
               'Items Donated:',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 8),
-            
-            ...widget.donation.items.map((item) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Row(
-                children: [
-                  Container(
-                    width: 6,
-                    height: 6,
-                    decoration: const BoxDecoration(
-                      color: AppColors.primaryColor,
-                      shape: BoxShape.circle,
+
+            ...widget.donation.items.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: AppColors.primaryColor,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${item['name']} - ${item['quantity']} ${item['unit'] ?? ''}',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Text(
+                      '${item['name']} - ${item['quantity']} ${item['unit'] ?? ''}',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
               ),
-            )),
-            
+            ),
+
             // Show matching info if available
             if (widget.donation.matchedNgoIds.isNotEmpty) ...[
               const SizedBox(height: 12),
@@ -449,7 +462,7 @@ class _DonationHistoryCardState extends State<DonationHistoryCard> {
                 ],
               ),
             ],
-            
+
             // Show acceptance info if accepted
             if (widget.donation.acceptedByNgoId != null) ...[
               const SizedBox(height: 8),
@@ -472,7 +485,7 @@ class _DonationHistoryCardState extends State<DonationHistoryCard> {
                 ],
               ),
             ],
-            
+
             // Show fulfillment info if fulfilled
             if (widget.donation.isfulfilled) ...[
               const SizedBox(height: 8),
@@ -491,23 +504,27 @@ class _DonationHistoryCardState extends State<DonationHistoryCard> {
                 ],
               ),
             ],
-            
+
             // NGO Details Section
             if (widget.donation.acceptedByNgoId != null) ...[
               const SizedBox(height: 16),
               const Divider(),
               const SizedBox(height: 8),
               FutureBuilder<Map<String, dynamic>?>(
-                future: widget.fetchNGODetails(widget.donation.acceptedByNgoId!),
+                future: widget.fetchNGODetails(
+                  widget.donation.acceptedByNgoId!,
+                ),
                 builder: (context, ngoSnapshot) {
                   if (ngoSnapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryColor),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          AppColors.primaryColor,
+                        ),
                       ),
                     );
                   }
-                  
+
                   if (ngoSnapshot.hasError || !ngoSnapshot.hasData) {
                     return const Padding(
                       padding: EdgeInsets.symmetric(vertical: 16),
@@ -519,9 +536,9 @@ class _DonationHistoryCardState extends State<DonationHistoryCard> {
                       ),
                     );
                   }
-                  
+
                   var ngoData = ngoSnapshot.data!;
-                  
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -535,12 +552,18 @@ class _DonationHistoryCardState extends State<DonationHistoryCard> {
                       const SizedBox(height: 4),
                       Text(
                         'Contact: ${ngoData['phone'] ?? 'N/A'}',
-                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Address: ${ngoData['address'] ?? 'N/A'}',
-                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
                       ),
                     ],
                   );

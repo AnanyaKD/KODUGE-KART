@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:food_share_connect/utils/matching_service.dart';
+import 'package:koduge_kart/utils/matching_service.dart';
 
 class AcceptedDonations extends StatefulWidget {
-  const AcceptedDonations({
-    super.key,
-  });
+  const AcceptedDonations({super.key});
 
   @override
   _AcceptedDonationsState createState() => _AcceptedDonationsState();
@@ -24,7 +22,7 @@ class _AcceptedDonationsState extends State<AcceptedDonations> {
 
   Future<void> _loadAcceptedDonations() async {
     if (!mounted) return;
-    
+
     setState(() {
       loading = true;
     });
@@ -34,14 +32,18 @@ class _AcceptedDonationsState extends State<AcceptedDonations> {
       if (currentUser != null) {
         // Check if user is NGO or Donor
         bool isNGO = await MatchingService.isNGOUser(currentUser.uid);
-        
+
         List<AcceptedDonation> donations;
         if (isNGO) {
-          donations = await MatchingService.getAcceptedDonations(currentUser.uid);
+          donations = await MatchingService.getAcceptedDonations(
+            currentUser.uid,
+          );
         } else {
-          donations = await MatchingService.getDonorAcceptedDonations(currentUser.uid);
+          donations = await MatchingService.getDonorAcceptedDonations(
+            currentUser.uid,
+          );
         }
-        
+
         if (mounted) {
           setState(() {
             acceptedDonations = donations;
@@ -64,27 +66,28 @@ class _AcceptedDonationsState extends State<AcceptedDonations> {
     // Show confirmation dialog
     bool? confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirm Fulfillment'),
-        content: const Text(
-          'Are you sure you want to mark this donation as fulfilled? '
-          'This action confirms that you have received the donated items.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              foregroundColor: Colors.white,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Confirm Fulfillment'),
+            content: const Text(
+              'Are you sure you want to mark this donation as fulfilled? '
+              'This action confirms that you have received the donated items.',
             ),
-            child: const Text('Confirm'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Confirm'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
 
     if (confirm == true) {
@@ -92,16 +95,17 @@ class _AcceptedDonationsState extends State<AcceptedDonations> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const AlertDialog(
-          content: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(width: 20),
-              Text('Marking as fulfilled...'),
-            ],
-          ),
-        ),
+        builder:
+            (context) => const AlertDialog(
+              content: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(width: 20),
+                  Text('Marking as fulfilled...'),
+                ],
+              ),
+            ),
       );
 
       try {
@@ -132,7 +136,9 @@ class _AcceptedDonationsState extends State<AcceptedDonations> {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Failed to mark donation as fulfilled. Please try again.'),
+                  content: Text(
+                    'Failed to mark donation as fulfilled. Please try again.',
+                  ),
                   backgroundColor: Colors.red,
                 ),
               );
@@ -142,7 +148,7 @@ class _AcceptedDonationsState extends State<AcceptedDonations> {
       } catch (e) {
         // Close loading dialog
         if (mounted) Navigator.of(context).pop();
-        
+
         // Show error message
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -209,7 +215,9 @@ class _AcceptedDonationsState extends State<AcceptedDonations> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isNGOUser ? "Your Accepted Donations:" : "Your Accepted Donations:",
+                          isNGOUser
+                              ? "Your Accepted Donations:"
+                              : "Your Accepted Donations:",
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -218,9 +226,9 @@ class _AcceptedDonationsState extends State<AcceptedDonations> {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          isNGOUser 
-                            ? "Donations you have accepted from donors"
-                            : "Your donations that have been accepted by NGOs",
+                          isNGOUser
+                              ? "Donations you have accepted from donors"
+                              : "Your donations that have been accepted by NGOs",
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.white70,
@@ -275,13 +283,23 @@ class _AcceptedDonationsState extends State<AcceptedDonations> {
                                       ),
                                       const Spacer(),
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
                                         decoration: BoxDecoration(
-                                          color: donation.isFulfilled ? Colors.green : Colors.orange,
-                                          borderRadius: BorderRadius.circular(12),
+                                          color:
+                                              donation.isFulfilled
+                                                  ? Colors.green
+                                                  : Colors.orange,
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
                                         child: Text(
-                                          donation.isFulfilled ? 'Fulfilled' : 'Pending',
+                                          donation.isFulfilled
+                                              ? 'Fulfilled'
+                                              : 'Pending',
                                           style: const TextStyle(
                                             fontSize: 12,
                                             color: Colors.white,
@@ -320,7 +338,9 @@ class _AcceptedDonationsState extends State<AcceptedDonations> {
 
                                   // Contact Details (NGO or Donor based on user type)
                                   Text(
-                                    isNGOUser ? "Donor Details:" : "NGO Details:",
+                                    isNGOUser
+                                        ? "Donor Details:"
+                                        : "NGO Details:",
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -405,20 +425,25 @@ class _AcceptedDonationsState extends State<AcceptedDonations> {
                                       ),
                                     ],
                                   ),
-                                  
+
                                   // Add fulfill button for NGO users on non-fulfilled donations
                                   if (isNGOUser && !donation.isFulfilled) ...[
                                     const SizedBox(height: 15),
                                     SizedBox(
                                       width: double.infinity,
                                       child: ElevatedButton.icon(
-                                        onPressed: () => _fulfillDonation(donation),
+                                        onPressed:
+                                            () => _fulfillDonation(donation),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.green,
                                           foregroundColor: Colors.white,
-                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                          ),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
                                           ),
                                         ),
                                         icon: const Icon(Icons.check_circle),
