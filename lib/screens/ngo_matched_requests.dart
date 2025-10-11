@@ -1,0 +1,241 @@
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:food_share_connect/constants/app_colors.dart';
+import 'package:food_share_connect/utils/matching_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class NGOMatchedRequests extends StatefulWidget {
+  const NGOMatchedRequests({super.key});
+
+  @override
+  _NGOMatchedRequestsState createState() => _NGOMatchedRequestsState();
+}
+
+class _NGOMatchedRequestsState extends State<NGOMatchedRequests> {
+  List<NGORequestHistory> matchedRequests = [];
+  bool loading = true;
+  String? currentUserId;
+
+  @override
+  void initState() {
+    super.initState();
+    currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    _loadMatchedRequests();
+  }
+
+  Future<void> _loadMatchedRequests() async {
+    if (currentUserId == null) return;
+
+    setState(() {
+      loading = true;
+    });
+
+    try {
+      // Get all requests and filter for matched ones
+      List<NGORequestHistory> allRequests = await MatchingService.getNGORequestHistory(currentUserId!);
+      
+      List<NGORequestHistory> matched = allRequests
+          .where((request) => request.status.toLowerCase() == 'matched')
+          .toList();
+      
+      setState(() {
+        matchedRequests = matched;
+        loading = false;
+      });
+    } catch (e) {
+      print('Error loading matched requests: $e');
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Matched Requests'),
+        backgroundColor: AppColors.primaryColor,
+        foregroundColor: AppColors.textColor,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadMatchedRequests,
+          ),
+        ],
+      ),
+      body: loading
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primaryColor,
+              ),
+            )
+          : matchedRequests.isEmpty
+              ? const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.inbox_outlined,
+                        size: 64,
+                        color: Colors.grey,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'No matched requests',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : RefreshIndicator(
+                  onRefresh: _loadMatchedRequests,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: matchedRequests.length,
+                    itemBuilder: (context, index) {
+                      final request = matchedRequests[index];
+                      return _buildRequestCard(request);
+                    },
+                  ),
+                ),
+    );
+  }
+
+  Widget _buildRequestCard(NGORequestHistory request) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with status and date
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    'Matched',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Text(
+                  _formatDate(request.addedDate),
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            
+            // Request ID
+            Text(
+              'Request ID: ${request.requestId}',
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 8),
+            
+            // Items requested
+            const Text(
+              'Items Requested:',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            
+            // Items list
+            ...request.items.map((item) => Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    item['name'] ?? 'Unknown',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  Text(
+                    '${item['quantity']} ${item['unit'] ?? ''}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            )),
+            
+            const SizedBox(height: 12),
+            
+            // Match information
+            if (request.matchedDonorIds.isNotEmpty) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      '${request.matchedDonorIds.length} potential donors found!',
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Check "Available Donations" to see and accept matching donations',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatDate(Timestamp timestamp) {
+    final date = timestamp.toDate();
+    return '${date.day}/${date.month}/${date.year}';
+  }
+}
