@@ -43,3 +43,29 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Firebase sensitive files
+# Note: If these are already committed, you need to:
+# 1. Remove them from git: git rm --cached [file]
+# 2. Regenerate keys in Firebase Console
+# 3. Update files with new keys
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+lib/firebase_options.dart
+
+# Android signing files
+android/app/upload-keystore.jks
+android/key.properties
+android/local.properties
+
+# iOS signing
+ios/Runner/GoogleService-Info.plist
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Debug logs
+pglite-debug.log
+*.log

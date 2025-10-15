@@ -1,16 +1,15 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:koduge_kart/controllers/auth_controller.dart';
 import 'package:koduge_kart/screens/login.dart';
 
 class UtilityMethods {
-  static onLogout(BuildContext context) {
-    FirebaseAuth.instance.signOut().whenComplete(
-      () => Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginPage()),
-        (route) => false,
-      ),
-    );
+  static Future<void> onLogout(BuildContext context) async {
+    final authController = Get.find<AuthController>();
+    await authController.logout();
+
+    // Navigate to login page
+    Get.offAll(() => const LoginPage(), transition: Transition.fadeIn);
   }
 
   static List<Map<String, String>> getDisplayedItems(currentTab) {

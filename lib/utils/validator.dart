@@ -53,4 +53,17 @@ class Validator {
     }
     return null;
   }
+
+  /// Validates a phone number field.
+  /// Returns an error message if invalid, otherwise null.
+  static String? validatePhone(String? phone) {
+    if (phone == null || phone.isEmpty) {
+      return 'Phone number cannot be empty';
+    } else if (phone.length != 10) {
+      return 'Phone number must be 10 digits';
+    } else if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
+      return 'Phone number must contain only digits';
+    }
+    return null;
+  }
 }

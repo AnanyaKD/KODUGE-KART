@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:food_share_connect/constants/app_colors.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:koduge_kart/constants/app_colors.dart';
+import 'package:koduge_kart/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:food_share_connect/utils/validator.dart';
-
-enum UserType { donor, ngo }
+import 'package:get/get.dart';
+import 'package:koduge_kart/utils/validator.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -14,20 +12,30 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final AuthController authController = Get.find<AuthController>();
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passController = TextEditingController();
-  final phonecontroller = TextEditingController();
-  final addreesscontroller = TextEditingController();
+  final phoneController = TextEditingController();
+  final addressController = TextEditingController();
   UserType? _character = UserType.donor;
 
-  bool _isloading = false;
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    emailController.dispose();
+    passController.dispose();
+    phoneController.dispose();
+    addressController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor, // Dark background
+      backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -40,7 +48,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   const Text(
                     'KODUGE',
                     style: TextStyle(
-                      color: AppColors.primaryColor, // Vibrant accent color
+                      color: AppColors.primaryColor,
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
                     ),
@@ -95,11 +103,11 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
-                    controller: phonecontroller,
+                    controller: phoneController,
                     keyboardType: TextInputType.phone,
                     style: const TextStyle(color: AppColors.textColor),
                     maxLength: 10,
-
+                    validator: Validator.validatePhone,
                     decoration: InputDecoration(
                       hintText: 'Phone',
                       hintStyle: const TextStyle(color: AppColors.textColor),
@@ -118,7 +126,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
-                    controller: addreesscontroller,
+                    controller: addressController,
                     validator: Validator.validateAddress,
                     style: const TextStyle(color: AppColors.textColor),
                     decoration: InputDecoration(
@@ -172,15 +180,12 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                         ListTile(
                           contentPadding: const EdgeInsets.all(0),
-                          visualDensity: const VisualDensity(
-                            vertical: -4,
-                          ), // Reduce vertical spacing
+                          visualDensity: const VisualDensity(vertical: -4),
                           title: const Text(
                             'Donor',
                             style: TextStyle(color: AppColors.textColor),
                           ),
                           horizontalTitleGap: 0,
-
                           leading: Radio<UserType>(
                             value: UserType.donor,
                             groupValue: _character,
@@ -215,90 +220,74 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _isloading
-                      ? const Center(
-                        child: CircularProgressIndicator(color: Colors.white),
-                      )
-                      : GestureDetector(
-                        onTap: () async {
-                          if (_formKey.currentState!.validate()) {
-                            setState(() {
-                              _isloading = true;
-                            });
-                            try {
-                              UserCredential userCredential = await FirebaseAuth
-                                  .instance
-                                  .createUserWithEmailAndPassword(
-                                    email: emailController.text,
-                                    password: passController.text,
-                                  );
-                              await Future.delayed(const Duration(seconds: 2));
+                  Obx(
+                    () =>
+                        authController.isLoading.value
+                            ? const Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.primaryColor,
+                              ),
+                            )
+                            : GestureDetector(
+                              onTap: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  authController.clearError();
 
-                              await FirebaseFirestore.instance
-                                  .collection("user")
-                                  .doc(userCredential.user!.uid)
-                                  .set({
-                                    "email": emailController.text,
-                                    "userType": _character.toString(),
-                                    "phone": phonecontroller.text,
-                                    "address": addreesscontroller.text,
-                                    "name": usernameController.text,
-                                  });
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Registration is Completed. Now you can login.',
+                                  final success = await authController.register(
+                                    name: usernameController.text,
+                                    email: emailController.text,
+                                    phone: phoneController.text,
+                                    address: addressController.text,
+                                    password: passController.text,
+                                    userType: _character ?? UserType.donor,
+                                    context: context,
+                                  );
+
+                                  if (success && context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Registration completed! You can now login.',
+                                        ),
+                                        duration: Duration(seconds: 3),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                    Navigator.pop(context);
+                                  } else if (!success && context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          authController.errorMessage.value,
+                                        ),
+                                        duration: const Duration(seconds: 3),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 40,
+                                  vertical: 15,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryColor,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    'Register',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: AppColors.contrastTextColor,
+                                    ),
                                   ),
                                 ),
-                              );
-                              Navigator.pop(context);
-                            } on FirebaseAuthException catch (e) {
-                              if (e.code == 'weak-password') {
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(SnackBar(content: Text(e.code)));
-                                print('The password provided is too weak.');
-                              } else if (e.code == 'email-already-in-use') {
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(SnackBar(content: Text(e.code)));
-                                print(
-                                  'The account already exists for that email.',
-                                );
-                              }
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("Some Error. Try again later."),
-                                ),
-                              );
-                              print(e);
-                            }
-                            setState(() {
-                              _isloading = false;
-                            });
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 40,
-                            vertical: 15,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryColor,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: const Center(
-                            child: Text(
-                              'Register',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: AppColors.contrastTextColor,
                               ),
                             ),
-                          ),
-                        ),
-                      ),
+                  ),
                   const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),

@@ -1,11 +1,11 @@
-import 'package:food_share_connect/constants/app_colors.dart';
+import 'package:koduge_kart/constants/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:food_share_connect/screens/available_donations.dart';
-import 'package:food_share_connect/screens/ngo_pending_requests.dart';
-import 'package:food_share_connect/screens/ngo_matched_requests.dart';
-import 'package:food_share_connect/screens/accepted_donations.dart';
-import 'package:food_share_connect/screens/fulfilled_donations.dart';
-import 'package:food_share_connect/utils/utility_methods.dart';
+import 'package:koduge_kart/screens/available_donations.dart';
+import 'package:koduge_kart/screens/ngo_pending_requests.dart';
+import 'package:koduge_kart/screens/ngo_matched_requests.dart';
+import 'package:koduge_kart/screens/accepted_donations.dart';
+import 'package:koduge_kart/screens/fulfilled_donations.dart';
+import 'package:koduge_kart/utils/utility_methods.dart';
 
 class NGOProfile extends StatefulWidget {
   const NGOProfile({super.key});

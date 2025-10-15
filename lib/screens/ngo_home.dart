@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:food_share_connect/constants/app_colors.dart';
-import 'package:food_share_connect/controllers/donation_controller.dart';
-import 'package:food_share_connect/screens/matched_ngo.dart';
-import 'package:food_share_connect/screens/ngo_profile.dart';
-import 'package:food_share_connect/utils/utility_methods.dart';
-import 'package:food_share_connect/utils/matching_service.dart';
+import 'package:koduge_kart/constants/app_colors.dart';
+import 'package:koduge_kart/controllers/donation_controller.dart';
+import 'package:koduge_kart/screens/matched_ngo.dart';
+import 'package:koduge_kart/screens/ngo_profile.dart';
+import 'package:koduge_kart/utils/utility_methods.dart';
+import 'package:koduge_kart/utils/matching_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

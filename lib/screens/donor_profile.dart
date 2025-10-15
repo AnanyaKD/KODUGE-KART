@@ -1,9 +1,9 @@
-import 'package:food_share_connect/constants/app_colors.dart';
-import 'package:flutter/material.dart';
-import 'package:food_share_connect/utils/utility_methods.dart';
-import 'package:food_share_connect/screens/donor_history.dart';
-import 'package:food_share_connect/screens/accepted_donations.dart';
-import 'package:food_share_connect/screens/fulfilled_donations.dart';
+import 'package:koduge_kart/constants/app_colors.dart';
+  import 'package:flutter/material.dart';
+  import 'package:koduge_kart/utils/utility_methods.dart';
+  import 'package:koduge_kart/screens/donor_history.dart';
+  import 'package:koduge_kart/screens/accepted_donations.dart';
+  import 'package:koduge_kart/screens/fulfilled_donations.dart';
 
 class DonorProfile extends StatefulWidget {
   const DonorProfile({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:food_share_connect/constants/app_colors.dart';
-import 'package:food_share_connect/utils/data_migration_service.dart';
+import 'package:koduge_kart/constants/app_colors.dart';
+import 'package:koduge_kart/utils/data_migration_service.dart';
 
 class MigrationScreen extends StatefulWidget {
   const MigrationScreen({super.key});

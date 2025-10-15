@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:food_share_connect/constants/app_colors.dart';
-import 'package:food_share_connect/utils/matching_service.dart';
-import 'package:food_share_connect/screens/available_donations.dart';
-import 'package:food_share_connect/screens/ngo_request_history.dart';
+import 'package:koduge_kart/constants/app_colors.dart';
+import 'package:koduge_kart/utils/matching_service.dart';
+import 'package:koduge_kart/screens/available_donations.dart';
+import 'package:koduge_kart/screens/ngo_request_history.dart';
 
 class NGODashboard extends StatefulWidget {
   const NGODashboard({super.key});

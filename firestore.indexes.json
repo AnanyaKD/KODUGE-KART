@@ -1,0 +1,143 @@
+{
+    "indexes": [
+        {
+            "collectionGroup": "donorfood",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "acceptedByNgoId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "isfulfilled",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "donorfood",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "donorId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "acceptedByNgoId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "isfulfilled",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "donorfood",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "donorId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "isfulfilled",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "donorfood",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "isfulfilled",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "addeddate",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "donorfood",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "requestId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "acceptedByNgoId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "isfulfilled",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "donorfood",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "requestId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "isfulfilled",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "ngofood",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "ngoId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "acceptedDonorId",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "ngofood",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "ngoId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "addeddate",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "ngofood",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "ngoId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "acceptedDonorId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "addeddate",
+                    "order": "DESCENDING"
+                }
+            ]
+        }
+    ],
+    "fieldOverrides": []
+}

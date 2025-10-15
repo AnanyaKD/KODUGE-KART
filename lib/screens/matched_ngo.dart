@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:food_share_connect/constants/app_colors.dart';
-import 'package:food_share_connect/models/ngo_model.dart';
-import 'package:food_share_connect/utils/matching_service.dart';
+import 'package:koduge_kart/constants/app_colors.dart';
+import 'package:koduge_kart/models/ngo_model.dart';
+import 'package:koduge_kart/utils/matching_service.dart';
 
 class MatchedNGOPage extends StatefulWidget {
   final NGOModel ngoRequest;
